@@ -5,7 +5,7 @@ import hbs from 'hbs'
 import forecast from './utils/forecast'
 
 const app: Application = express()
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3000 // TODO move this line closer to its usage. Also create config.ts file where you will store all config for your app
 
 // Define paths for Express config
 const publicDirectoryPath: string = path.join(__dirname, '../public')
@@ -49,9 +49,9 @@ app.get('/weather', (req: Request, res: Response): void | Response => {
         })
     }
 
-    geocode(
+    geocode( // TODO Refactor code that way to get rid from callbacks for async code (usage callbacks for async code is deprecated, and you should never use them for async code) use async await instead
         req.query.address,
-        (error: Error, { latitude, longitude, location } = {}): void | Response => {
+        (error: Error, { latitude, longitude, location } = {}): void | Response => { // TODO remove useless '= {}'
             if (error) {
                 return res.send({ error })
             }
@@ -71,7 +71,7 @@ app.get('/weather', (req: Request, res: Response): void | Response => {
     )
 })
 
-app.get('/help/*', (req: Request, res: Response): void => {
+app.get('/help/*', (req: Request, res: Response): void => { // TODO remove unused route
     res.render('404', {
         title: '404',
         name: 'Andrew Mead',
@@ -79,7 +79,7 @@ app.get('/help/*', (req: Request, res: Response): void => {
     })
 })
 
-app.get('*', (req: Request, res: Response): void => {
+app.get('*', (req: Request, res: Response): void => { // TODO remove unused route
     res.render('404', {
         title: '404',
         name: 'Andrew Mead',

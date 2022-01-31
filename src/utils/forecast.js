@@ -1,8 +1,8 @@
-const request = require('postman-request')
+const request = require('postman-request') // TODO Replace this lib with axios, because 'postman-request' provides usage callbacks for async api and should be never used
 
 const forecast = (latitude, longitude, callback) => {
     const url =
-        'http://api.weatherstack.com/current?access_key=d950ca614fa8ef7d86a8db837b9edd5b&query=' +
+        'http://api.weatherstack.com/current?access_key=d950ca614fa8ef7d86a8db837b9edd5b&query=' + // TODO Move the access key to env variable (see 'dotenv' lib). Access keys should be NEVER be present in application code
         longitude +
         ',' +
         latitude
