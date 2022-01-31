@@ -1,11 +1,11 @@
 import express, { Request, Response, Application } from "express";
 import path from "path";
 import hbs from "hbs";
-import { geocode } from "./utils/geocode";
-import { forecast } from "./utils/forecast";
+
+import { weatherController } from "./weather.controller";
+import {config} from './config';
 
 const app: Application = express();
-const port = process.env.PORT || 3000;
 
 // Define paths for Express config
 const publicDirectoryPath: string = path.join(__dirname, "../public");
@@ -20,56 +20,10 @@ hbs.registerPartials(partialsPath);
 // Setup static directory to serve
 app.use(express.static(publicDirectoryPath));
 
-app.get("", (req: Request, res: Response): void => {
-  res.render("index", {
-    title: "Weather",
-    name: "Vlad Zazhyrko",
-  });
-});
-
-app.get("/about", (req: Request, res: Response): void => {
-  res.render("about", {
-    title: "About Me",
-    name: "Vlad Zazhyrko",
-  });
-});
-
-app.get("/help", (req: Request, res: Response): void => {
-  res.render("help", {
-    helpText: "This is some helpful text.",
-    title: "Help",
-    name: "Vlad Zazhyrko",
-  });
-});
-
-app.get("/weather", (req: Request, res: Response): void | Response => {
-  if (!req.query.address) {
-    return res.send({
-      error: "You must provide address",
-    });
-  }
-
-  geocode(
-    req.query.address,
-    (error: Error, { latitude, longitude, location }): void | Response => {
-      if (error) {
-        return res.send({ error });
-      }
-
-      forecast(latitude, longitude, (forecastErr, forecastData) => {
-        if (forecastErr) {
-          return res.send({ error: forecastErr });
-        }
-
-        res.send({
-          forecast: forecastData,
-          location,
-          address: req.query.address,
-        });
-      });
-    }
-  );
-});
+app.get("", weatherController.renderHome.bind(weatherController));
+app.get("/about", weatherController.renderAbout.bind(weatherController));
+app.get("/help", weatherController.renderHelp.bind(weatherController));
+app.get("/weather", weatherController.getWeather.bind(weatherController));
 
 app.get("/help/*", (req: Request, res: Response): void => {
   res.render("404", {
@@ -86,6 +40,8 @@ app.get("*", (req: Request, res: Response): void => {
     errorMessage: "Page not found.",
   });
 });
+
+const port = config.app.port;
 
 app.listen(port, (): void => {
   console.log(`Server is up on port ${port}`);
